@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:paddingBottom="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp" >
+	
+	<TextView
+	    android:id="@+id/LblTitle"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="1"
+	    android:hint="Parking Casa Adri"
+	    android:textSize="20dp"
+	    android:textStyle="bold" />
+
+	<TextView
+	    android:id="@+id/LblStatus"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="2"
+	    android:gravity="right"
+	    android:hint="Occupied"
+	    android:textSize="15dp"
+	    android:textStyle="normal" />
+
+</LinearLayout>

@@ -1,11 +1,16 @@
 package com.example.pfc_alpha1;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -13,6 +18,16 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -34,10 +49,18 @@ public class MainActivity extends FragmentActivity implements
     GooglePlayServicesClient.ConnectionCallbacks, 
     GooglePlayServicesClient.OnConnectionFailedListener{
 
+//Map Variables
 private SupportMapFragment mapFragment;
 private GoogleMap mMap;
 private double mLat, mLng;
 private LocationClient mLocationClient;
+boolean finished_markers = false;
+
+
+//ListVariables
+
+
+
 /*
  * Define a request code to send to Google Play services
  * This code is returned in Activity.onActivityResult
@@ -68,10 +91,22 @@ public static class ErrorDialogFragment extends DialogFragment {
     }
 }
 
+public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the menu items for use in the action bar
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.main, menu);
+    return super.onCreateOptionsMenu(menu);
+}
+
+private ListView lstOptions;
+private List<ParkingMarker> parkings;
+
 @Override
 protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    
+    
 
     mLocationClient = new LocationClient(this, this, this);
 
@@ -81,11 +116,45 @@ protected void onCreate(Bundle savedInstanceState) {
     mMap.setMyLocationEnabled(true);
     
     
+    parkings = new ArrayList<ParkingMarker>();
     RetrieveFeed task = new RetrieveFeed();
 //    task.execute("http://adrianlatorre.com/parkingpositions.xml");
     task.execute("https://dl.dropboxusercontent.com/u/123539/parkingpositions.xml");
-      
+    try {
+		task.get(2500, TimeUnit.MILLISECONDS);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (ExecutionException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (TimeoutException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     
+    float markercolor;
+
+  //Creating ListView
+    List<ParkingMarker> parkings_data = new ArrayList<ParkingMarker>();
+    parkings_data = parkings;
+    ParkingAdapter adapter = new ParkingAdapter(this,parkings_data);
+   
+    lstOptions = (ListView)findViewById(R.id.LstParkings);
+	lstOptions.setAdapter(adapter); 
+	
+	lstOptions.setOnItemClickListener(new OnItemClickListener() {
+	    @Override
+	    public void onItemClick(AdapterView<?> a, View v, int position, long id) {
+	        
+	    	Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" +parkings.get(position).getLat()+","+parkings.get(position).getLng()));
+        	intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        	startActivity(intent);
+	    }
+	});
+    
+    
+	//Click to navigate
     mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
         @Override
         public void onInfoWindowClick(Marker marker) {
@@ -97,12 +166,60 @@ protected void onCreate(Bundle savedInstanceState) {
         }
     });
     
+    
+    
+    
+    
 
 }
+
+
+class ParkingAdapter extends ArrayAdapter<ParkingMarker> {
+	
+	 Activity context;
+	 List<ParkingMarker> parkings_data;
+
+	
+	public ParkingAdapter(Activity context, List<ParkingMarker> parkings_data) {
+		super(context, R.layout.list_details, parkings_data);
+		this.context = context;
+		this.parkings_data=parkings_data;
+		
+	}
+	
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		LayoutInflater inflater = context.getLayoutInflater();
+		View item = inflater.inflate(R.layout.list_details, null);
+
+		TextView lblTit = (TextView)item.findViewById(R.id.LblTitle);
+		lblTit.setText(parkings_data.get(position).getName());
+
+		TextView lblStat = (TextView)item.findViewById(R.id.LblStatus);
+		boolean free;
+		free=parkings_data.get(position).getFree();
+		if(free){
+			lblStat.setText("Free");
+			lblStat.setTextColor(Color.GREEN);
+		}
+		else{
+			lblStat.setText("Occupied");
+			lblStat.setTextColor(Color.RED);
+		}
+
+		return(item);
+	}
+}
+
+
+
+
 
 /*
  * Called when the Activity becomes visible.
  */
+
+
 @Override
 protected void onStart() {
     super.onStart();
@@ -227,42 +344,41 @@ public void onConnectionFailed(ConnectionResult connectionResult) {
        Toast.makeText(getApplicationContext(), "Sorry. Location services not available to you", Toast.LENGTH_LONG).show();
     }
 }
-
-
-private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
+	private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
+		
+		// Getting the parkings	
+		
+		protected Boolean doInBackground(String... params) {
+	     	 ParkingParser parkingparser = new ParkingParser(params[0]);
+	    	 parkings = parkingparser.parse();
+	        return true;
+	    }
 	
-	public List<ParkingMarker> parkings;
+		// Adding markers
+	    protected void onPostExecute(Boolean result) {
+	    	
+	    	float markercolor;
+	    	
+	        //Recorremos la lista
+	    	for (ParkingMarker parking : parkings){
+	    		mLat = parking.getLat();
+	    		mLng = parking.getLng();
+	    		
+	    		if (parking.getFree())
+	    		markercolor = BitmapDescriptorFactory.HUE_GREEN;
+	    		else
+	    			markercolor = BitmapDescriptorFactory.HUE_RED;
+	        	
+	        	mMap.addMarker(new MarkerOptions()
+	            .position(new LatLng(mLat,mLng ))
+	            .title(parking.getName())
+	    		.icon(BitmapDescriptorFactory.defaultMarker(markercolor)));
+	        }
+	    	
+	    	finished_markers = true;
 	 
-    protected Boolean doInBackground(String... params) {
- 
-    	 ParkingParser parkingparser = new ParkingParser(params[0]);
-    	 parkings = parkingparser.parse();
-    	    
- 
-        return true;
-    }
- 
-    protected void onPostExecute(Boolean result) {
-    	float markercolor;
-    	
-        //Tratamos la lista de parkings
-    	for (ParkingMarker parking : parkings){
-    		mLat = parking.getLat();
-    		mLng = parking.getLng();
-    		
-    		if (parking.getFree())
-    		markercolor = BitmapDescriptorFactory.HUE_GREEN;
-    		else
-    			markercolor = BitmapDescriptorFactory.HUE_RED;
-        	
-        	mMap.addMarker(new MarkerOptions()
-            .position(new LatLng(mLat,mLng ))
-            .title(parking.getName())
-    		.icon(BitmapDescriptorFactory.defaultMarker(markercolor)));
-        }
- 
-        
-    }
-}
+	        
+	    }
+	}
 
 }

@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout  
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
-    <fragment
+<LinearLayout 
+    android:orientation="vertical" 
+    android:layout_height="fill_parent" 
+    android:layout_width="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+
+ 	 <LinearLayout
+ 	     android:id="@+id/top_half"
+ 	     android:layout_width="fill_parent"
+ 	     android:layout_height="fill_parent"
+ 	     android:layout_weight="1"
+ 	     android:orientation="horizontal"
+ 	     android:padding="15dp" >
+
+ 	     <ListView
+ 	         android:id="@+id/LstParkings"
+ 	         android:layout_width="fill_parent"
+ 	         android:layout_height="wrap_content" />
+
+ 	     </LinearLayout>
+
+  	<LinearLayout
+  	    android:id="@+id/bot_half"
+  	    android:layout_width="fill_parent"
+  	    android:layout_height="fill_parent"
+  	    android:layout_weight="1"
+  	    android:orientation="horizontal" >
+
+   <fragment
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
-</RelativeLayout>
+	</LinearLayout>
+</LinearLayout>

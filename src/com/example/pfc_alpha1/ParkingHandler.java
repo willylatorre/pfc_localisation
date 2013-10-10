@@ -60,16 +60,16 @@ public class ParkingHandler extends DefaultHandler {
         if (this.parkingActual != null) {
  
             if (localName.equals("name")) {
-                parkingActual.setName(sbText.toString());
-            } else if (localName.equals("lat")) {
-            	value = Double.parseDouble(sbText.toString());	
+            	parkingActual.setName(sbText.toString().trim());
+              } else if (localName.equals("lat")) {
+            	value = Double.parseDouble(sbText.toString().trim());	
                 parkingActual.setLat(value);
             } else if (localName.equals("lng")) {
-            	value = Double.parseDouble(sbText.toString());	
+            	value = Double.parseDouble(sbText.toString().trim());	
                 parkingActual.setLng(value);
             } else if (localName.equals("free")) {
             	
-            	value = Double.parseDouble(sbText.toString());
+            	value = Double.parseDouble(sbText.toString().trim());
             	
             	if(value==1)parkingActual.setFree(Boolean.TRUE);
             	else if(value==0)parkingActual.setFree(Boolean.FALSE);
