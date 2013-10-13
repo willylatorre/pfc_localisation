@@ -1,13 +1,16 @@
 package com.example.pfc_alpha1;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Color;
@@ -55,6 +58,8 @@ private GoogleMap mMap;
 private double mLat, mLng;
 private LocationClient mLocationClient;
 boolean finished_markers = false;
+HashMap<Marker, ParkingMarker> eventMarkerMap = new HashMap<Marker, ParkingMarker>();  
+
 
 /*
  * Define a request code to send to Google Play services
@@ -96,6 +101,7 @@ public boolean onCreateOptionsMenu(Menu menu) {
 private ListView lstOptions;
 private List<ParkingMarker> parkings;
 
+@SuppressLint("ShowToast")
 @Override
 protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -109,6 +115,7 @@ protected void onCreate(Bundle savedInstanceState) {
     mMap = mapFragment.getMap();
     //and enable its location
     mMap.setMyLocationEnabled(true);
+    
     
     //We create a list of parkings
     parkings = new ArrayList<ParkingMarker>();
@@ -143,26 +150,46 @@ protected void onCreate(Bundle savedInstanceState) {
 	 * Adding extra options
 	 */
 	
+	// Preparing error message
+		Context context = getApplicationContext();
+		CharSequence text = "This parking is full!";
+		int duration = Toast.LENGTH_SHORT;
+
+		final Toast toast = Toast.makeText(context, text, duration);
+	
 	// OnclikListener for the List 
 	lstOptions.setOnItemClickListener(new OnItemClickListener() {
 	    @Override
-	    public void onItemClick(AdapterView<?> a, View v, int position, long id) {
+	    public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
+	    	
+	    	//Obtaining the status
+	    	boolean status_selected=((ParkingMarker)adapter.getAdapter().getItem(position)).getFree();
+	    	
+	    	if(status_selected){
 	    	//Launch Navigation
 	    	Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" +parkings.get(position).getLat()+","+parkings.get(position).getLng()));
         	intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         	startActivity(intent);
+	    	}else{
+	    		toast.show();
+	    	}
 	    }
 	});
-    
     
 	//OnclickListener for the markers
     mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
         @Override
         public void onInfoWindowClick(Marker marker) {
+        	//Retrieve the parkingMarker object associated
+        	ParkingMarker parking_info=eventMarkerMap.get(marker);
+        	
+        	if(parking_info.getFree()){
         	//Launch Navigation
-        	Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" +mLat+","+mLng));
+        	Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" +parking_info.getLat()+","+parking_info.getLng()));
         	intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         	startActivity(intent);
+        	}
+        	else{toast.show();}
         }
     });
 }
@@ -195,7 +222,7 @@ class ParkingAdapter extends ArrayAdapter<ParkingMarker> {
 		if(free){
 			lblStat.setText("Free");
 			//Color.rgb(8, 77, 13)
-			lblStat.setTextColor(Color.GREEN);
+			lblStat.setTextColor(Color.rgb(8, 77, 13));
 		}
 		else{
 			lblStat.setText("Occupied");
@@ -370,10 +397,13 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    			markercolor = BitmapDescriptorFactory.HUE_RED;
 	        	
 	    		//adding a new marker on the map
-	        	mMap.addMarker(new MarkerOptions()
+	        	Marker marker = mMap.addMarker(new MarkerOptions()
 	            .position(new LatLng(mLat,mLng ))
 	            .title(parking.getName())
 	    		.icon(BitmapDescriptorFactory.defaultMarker(markercolor)));
+	        	
+	        	//adding event to HashMap
+	        	eventMarkerMap.put(marker, parking);
 	        }
 	    }
 }// End of retrieve
