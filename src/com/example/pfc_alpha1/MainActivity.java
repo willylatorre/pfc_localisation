@@ -56,11 +56,6 @@ private double mLat, mLng;
 private LocationClient mLocationClient;
 boolean finished_markers = false;
 
-
-//ListVariables
-
-
-
 /*
  * Define a request code to send to Google Play services
  * This code is returned in Activity.onActivityResult
@@ -106,20 +101,23 @@ protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     
-    
-
+    //The Location client
     mLocationClient = new LocationClient(this, this, this);
 
+    //We create a map
     mapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
     mMap = mapFragment.getMap();
-
+    //and enable its location
     mMap.setMyLocationEnabled(true);
     
-    
+    //We create a list of parkings
     parkings = new ArrayList<ParkingMarker>();
+    
+    //We call to an auxiliar Async method to retrieve all the information followin the Google criteria
     RetrieveFeed task = new RetrieveFeed();
-//    task.execute("http://adrianlatorre.com/parkingpositions.xml");
     task.execute("https://dl.dropboxusercontent.com/u/123539/parkingpositions.xml");
+    
+    //We have to wait some time in order that all the parkings in the list are retrieved
     try {
 		task.get(2500, TimeUnit.MILLISECONDS);
 	} catch (InterruptedException e) {
@@ -132,8 +130,6 @@ protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-    
-    float markercolor;
 
   //Creating ListView
     List<ParkingMarker> parkings_data = new ArrayList<ParkingMarker>();
@@ -143,10 +139,15 @@ protected void onCreate(Bundle savedInstanceState) {
     lstOptions = (ListView)findViewById(R.id.LstParkings);
 	lstOptions.setAdapter(adapter); 
 	
+	/**
+	 * Adding extra options
+	 */
+	
+	// OnclikListener for the List 
 	lstOptions.setOnItemClickListener(new OnItemClickListener() {
 	    @Override
 	    public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-	        
+	    	//Launch Navigation
 	    	Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" +parkings.get(position).getLat()+","+parkings.get(position).getLng()));
         	intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         	startActivity(intent);
@@ -154,52 +155,46 @@ protected void onCreate(Bundle savedInstanceState) {
 	});
     
     
-	//Click to navigate
+	//OnclickListener for the markers
     mMap.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
         @Override
         public void onInfoWindowClick(Marker marker) {
+        	//Launch Navigation
         	Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" +mLat+","+mLng));
         	intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         	startActivity(intent);
-
-
         }
     });
-    
-    
-    
-    
-    
-
 }
 
-
+//Adapter for the List
 class ParkingAdapter extends ArrayAdapter<ParkingMarker> {
 	
 	 Activity context;
 	 List<ParkingMarker> parkings_data;
 
-	
 	public ParkingAdapter(Activity context, List<ParkingMarker> parkings_data) {
 		super(context, R.layout.list_details, parkings_data);
 		this.context = context;
-		this.parkings_data=parkings_data;
-		
+		this.parkings_data=parkings_data;	
 	}
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = context.getLayoutInflater();
 		View item = inflater.inflate(R.layout.list_details, null);
-
+		
+		//We retrieve the name of the parking
 		TextView lblTit = (TextView)item.findViewById(R.id.LblTitle);
 		lblTit.setText(parkings_data.get(position).getName());
-
+		//We retrieve the status of the parking
 		TextView lblStat = (TextView)item.findViewById(R.id.LblStatus);
 		boolean free;
 		free=parkings_data.get(position).getFree();
+		//Depending on the status, we change the color
 		if(free){
 			lblStat.setText("Free");
+			//Color.rgb(8, 77, 13)
 			lblStat.setTextColor(Color.GREEN);
 		}
 		else{
@@ -218,7 +213,6 @@ class ParkingAdapter extends ArrayAdapter<ParkingMarker> {
 /*
  * Called when the Activity becomes visible.
  */
-
 
 @Override
 protected void onStart() {
@@ -344,10 +338,16 @@ public void onConnectionFailed(ConnectionResult connectionResult) {
        Toast.makeText(getApplicationContext(), "Sorry. Location services not available to you", Toast.LENGTH_LONG).show();
     }
 }
-	private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
+	
+/**
+ * Called from onCreate to retrieve the list of parkings
+ * @author Past
+ *
+ */
+
+private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 		
 		// Getting the parkings	
-		
 		protected Boolean doInBackground(String... params) {
 	     	 ParkingParser parkingparser = new ParkingParser(params[0]);
 	    	 parkings = parkingparser.parse();
@@ -356,29 +356,26 @@ public void onConnectionFailed(ConnectionResult connectionResult) {
 	
 		// Adding markers
 	    protected void onPostExecute(Boolean result) {
-	    	
 	    	float markercolor;
 	    	
-	        //Recorremos la lista
+	        //Go through each item on the list
 	    	for (ParkingMarker parking : parkings){
 	    		mLat = parking.getLat();
 	    		mLng = parking.getLng();
 	    		
+	    		//change the color depending on the status
 	    		if (parking.getFree())
 	    		markercolor = BitmapDescriptorFactory.HUE_GREEN;
 	    		else
 	    			markercolor = BitmapDescriptorFactory.HUE_RED;
 	        	
+	    		//adding a new marker on the map
 	        	mMap.addMarker(new MarkerOptions()
 	            .position(new LatLng(mLat,mLng ))
 	            .title(parking.getName())
 	    		.icon(BitmapDescriptorFactory.defaultMarker(markercolor)));
 	        }
-	    	
-	    	finished_markers = true;
-	 
-	        
 	    }
-	}
+}// End of retrieve
 
-}
+} // End of main
