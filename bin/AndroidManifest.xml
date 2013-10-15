@@ -33,6 +33,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.example.pfc_alpha1.Settings"
+                  android:label="Settings">
+        </activity>
 
         <!-- Google Maps API v2 key-->
         <meta-data 

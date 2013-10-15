@@ -3,9 +3,28 @@
 
     <string name="app_name">PFC_alpha1</string>
     <string name="action_settings">Settings</string>
-    <string name="action_search">Search</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
-
+    <string name="action_reload">Reload</string>
+    
+    
+    <!-- Settings -->
+    <string name="pref_grouptitle">General</string>
+    <string name="pref_autorefreshenabledTitle">Autorefresh</string>
+    <string name="pref_autorefrehsenabledSummary">Autorefresh the list of parkings available. Default: 20min</string>
+    <string name="pref_autorefreshtimeTitle">Autorefresh Time</string>
+    <string name="pref_autorefreshtimeDialog">How much time do you want to wait between refreshs?</string>
+    <string name="pref_markercolorTitle">Markers Color</string>
+    <string name="pref_markercolorSummary">Pic the color for your markers</string>
+    
+     <string name="pref_markercolorFREETitle">Free Parking Marker</string>
+    <string name="pref_markercolorFREESummary">Pick the color for the free parking marker</string>
+    <string name="pref_markercolorFREEdefault">#08480D</string>
+    <string name="pref_markercolorOCCUPIEDTitle">Occupied Parking Marker</string>
+    <string name="pref_markercolorOCCUPIEDSummary">Pick the color for the occupied parking marker</string>
+    <string name="pref_markercolorOCCUPIEDdefault">#FF0000</string>
+    
+    
+    
+    
+    
+    
 </resources>
