@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+   
+    <PreferenceCategory 
+        android:title="@string/pref_grouptitle"
+        android:key="pref_settings">
+    <CheckBoxPreference
+        android:key="pref_autorefreshenabled"
+        android:title="@string/pref_autorefreshenabledTitle"
+        android:summary="@string/pref_autorefrehsenabledSummary"
+        android:defaultValue="true" />
+    <ListPreference
+        android:dependency="pref_autorefreshenabled"
+        android:key="pref_autorefresh_time"
+        android:title="@string/pref_autorefreshtimeTitle"
+        android:dialogTitle="@string/pref_autorefreshtimeDialog"
+        android:entries="@array/autorefreshtime"
+        android:entryValues="@array/autorefreshtime_values" />
+    </PreferenceCategory>
+    <PreferenceCategory 
+        android:key="pref_markercolor"
+        android:title="@string/pref_markercolorTitle" 
+        android:summary="@string/pref_markercolorSummary" >
+    <EditTextPreference 
+        android:key="pref_markercolorFREE"
+        android:title="@string/pref_markercolorFREETitle"
+        android:summary="@string/pref_markercolorFREESummary"
+        android:defaultValue="@string/pref_markercolorFREEdefault"  />
+    <EditTextPreference 
+        android:key="pref_markercolorOCCUPIED"
+        android:title="@string/pref_markercolorOCCUPIEDTitle"
+        android:summary="@string/pref_markercolorOCCUPIEDSummary"
+        android:defaultValue="@string/pref_markercolorOCCUPIEDdefault"  />
+    </PreferenceCategory>
+</PreferenceScreen>

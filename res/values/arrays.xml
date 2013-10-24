@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="autorefreshtime">
+        <item>1 mins</item>
+        <item>5 mins</item>
+        <item>10 mins</item>
+        <item>30 mins</item>
+        <item>1 hora</item>
+        <item>3 horas</item>
+    </string-array>
+    <string-array name="autorefreshtime_values">
+        <item>1</item>
+        <item>5</item>
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+    </string-array>
+</resources>

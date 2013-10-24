@@ -141,9 +141,7 @@ protected void onCreate(Bundle savedInstanceState) {
     // Preferences
     PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
     SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-    
- 
-    
+
     //The Location client
     mLocationClient = new LocationClient(this, this, this);
 
@@ -223,7 +221,7 @@ class ParkingAdapter extends ArrayAdapter<ParkingMarker> {
 			lblStat.setText("Occupied");
 			lblStat.setTextColor(Color.parseColor(color_occupied));
 		}
-
+		
 		return(item);
 	}
 }
