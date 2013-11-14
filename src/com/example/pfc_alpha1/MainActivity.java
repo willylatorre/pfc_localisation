@@ -1,5 +1,7 @@
 package com.example.pfc_alpha1;
 
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,11 +9,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -35,6 +40,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gcm.GCMRegistrar;
+
+
+import static com.example.pfc_alpha1.CommonUtilities.DISPLAY_MESSAGE_ACTION;
+import static com.example.pfc_alpha1.CommonUtilities.EXTRA_MESSAGE;
+import static com.example.pfc_alpha1.CommonUtilities.SENDER_ID;
+import static com.example.pfc_alpha1.CommonUtilities.SERVER_URL;
+import static  com.example.pfc_alpha1.CommonUtilities.EXTRA_MESSAGE;
+
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -68,7 +83,12 @@ HashMap<Marker, ParkingMarker> eventMarkerMap = new HashMap<Marker, ParkingMarke
 //List Variables
 List<ParkingMarker> parkings_data ;
 ParkingAdapter adapter;
+private ListView lstOptions;
+private List<ParkingMarker> parkings;
 
+// GCM
+TextView mDisplay;
+AsyncTask<Void, Void, Void> mRegisterTask;
 
 
 /*
@@ -76,6 +96,7 @@ ParkingAdapter adapter;
  * This code is returned in Activity.onActivityResult
  */
 private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+
 
 // Define a DialogFragment that displays the error dialog
 public static class ErrorDialogFragment extends DialogFragment {
@@ -111,10 +132,16 @@ public boolean onCreateOptionsMenu(Menu menu) {
 @Override
 public boolean onOptionsItemSelected(MenuItem item) {
   switch (item.getItemId()) {
+  
+  case R.id.action_share:
+	  Intent share_intent = new Intent(this, ShareNotification.class);
+	  share_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	  startActivity(share_intent);
+	  break;
   case R.id.action_settings:
-	  Intent intent = new Intent(this, Settings.class);
-	  intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	  startActivity(intent);
+	  Intent settings_intent = new Intent(this, Settings.class);
+	  settings_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	  startActivity(settings_intent);
 	  break;
   case R.id.action_reload:
     Toast.makeText(this, "Reloading parkings...", Toast.LENGTH_LONG)
@@ -128,9 +155,6 @@ public boolean onOptionsItemSelected(MenuItem item) {
 
   return true;
 } 
-
-private ListView lstOptions;
-private List<ParkingMarker> parkings;
 
 @SuppressLint("ShowToast")
 @Override
@@ -151,6 +175,8 @@ protected void onCreate(Bundle savedInstanceState) {
     //and enable its location
     mMap.setMyLocationEnabled(true);
     
+    // We activate GCM Notifications
+    activateGCM(savedInstanceState);
     
     //We create a list of parkings
     parkings = new ArrayList<ParkingMarker>();
@@ -250,7 +276,33 @@ protected void onStop() {
    
     super.onStop();
 }
-
+/*
+ * GCM
+ * @see android.support.v4.app.FragmentActivity#onDestroy()
+ */
+@Override
+protected void onDestroy() {
+    if (mRegisterTask != null) {
+        mRegisterTask.cancel(true);
+    }
+    unregisterReceiver(mHandleMessageReceiver);
+    GCMRegistrar.onDestroy(this);
+    super.onDestroy();
+}
+private void checkNotNull(Object reference, String name) {
+    if (reference == null) {
+        throw new NullPointerException(
+                getString(R.string.error_config, name));
+    }
+}
+private final BroadcastReceiver mHandleMessageReceiver =
+new BroadcastReceiver() {
+@Override
+public void onReceive(Context context, Intent intent) {
+String newMessage = intent.getExtras().getString(EXTRA_MESSAGE);
+//mDisplay.append(newMessage + "\n");
+}
+};
 /*
  * Handle results returned to the FragmentActivity
  * by Google Play services
@@ -363,6 +415,63 @@ public void onConnectionFailed(ConnectionResult connectionResult) {
        Toast.makeText(getApplicationContext(), "Sorry. Location services not available to you", Toast.LENGTH_LONG).show();
     }
 }
+
+
+private void activateGCM (Bundle savedInstanceState){
+	
+     checkNotNull(SERVER_URL, "SERVER_URL");
+     checkNotNull(SENDER_ID, "SENDER_ID");
+     // Make sure the device has the proper dependencies.
+     GCMRegistrar.checkDevice(this);
+     // Make sure the manifest was properly set - comment out this line
+     // while developing the app, then uncomment it when it's ready.
+     GCMRegistrar.checkManifest(this);
+     registerReceiver(mHandleMessageReceiver,
+             new IntentFilter(DISPLAY_MESSAGE_ACTION));
+     final String regId = GCMRegistrar.getRegistrationId(this);
+     if (regId.equals("")) {
+         // Automatically registers application on startup.
+         GCMRegistrar.register(this, SENDER_ID);
+     } else {
+         // Device is already registered on GCM, check server.
+         if (GCMRegistrar.isRegisteredOnServer(this)) {
+             // Skips registration.
+        	 // already registered
+         } else {
+             // Try to register again, but not in the UI thread.
+             // It's also necessary to cancel the thread onDestroy(),
+             // hence the use of AsyncTask instead of a raw thread.
+             final Context context = this;
+             mRegisterTask = new AsyncTask<Void, Void, Void>() {
+
+                 @Override
+                 protected Void doInBackground(Void... params) {
+                     boolean registered =
+                             ServerUtilities.register(context, regId);
+                     // At this point all attempts to register with the app
+                     // server failed, so we need to unregister the device
+                     // from GCM - the app will try to register again when
+                     // it is restarted. Note that GCM will send an
+                     // unregistered callback upon completion, but
+                     // GCMIntentService.onUnregistered() will ignore it.
+                     if (!registered) {
+                         GCMRegistrar.unregister(context);
+                     }
+                     return null;
+                 }
+
+                 @Override
+                 protected void onPostExecute(Void result) {
+                     mRegisterTask = null;
+                 }
+
+             };
+             mRegisterTask.execute(null, null, null);
+         }
+     }
+}
+
+
 	
 /**
  * Called from onCreate to retrieve the list of parkings

@@ -191,27 +191,44 @@ containing a value of this type.
         public static final int ic_plusone_small_off_client=0x7f02001d;
         public static final int ic_plusone_standard_off_client=0x7f02001e;
         public static final int ic_plusone_tall_off_client=0x7f02001f;
+        public static final int ic_stat_gcm=0x7f020020;
     }
     public static final class id {
         public static final int LblStatus=0x7f06000b;
         public static final int LblTitle=0x7f06000a;
         public static final int LstParkings=0x7f060006;
-        public static final int action_reload=0x7f06000c;
-        public static final int action_settings=0x7f06000d;
+        public static final int action_reload=0x7f06001b;
+        public static final int action_settings=0x7f06001c;
+        public static final int action_share=0x7f06001a;
         public static final int bot_half=0x7f060007;
+        public static final int call=0x7f060019;
+        public static final int details_one=0x7f06000e;
+        public static final int details_three=0x7f060014;
+        public static final int details_two=0x7f060011;
+        public static final int facebook=0x7f060018;
         public static final int hybrid=0x7f060004;
+        public static final int main=0x7f06000c;
         public static final int map=0x7f060008;
         public static final int none=0x7f060000;
         public static final int normal=0x7f060001;
+        public static final int p_loc=0x7f060012;
+        public static final int p_loc_dec=0x7f060013;
+        public static final int p_time=0x7f060015;
+        public static final int p_time_desc=0x7f060016;
+        public static final int p_type=0x7f06000f;
+        public static final int p_type_desc=0x7f060010;
         public static final int satellite=0x7f060002;
         public static final int section_label=0x7f060009;
+        public static final int share_title=0x7f06000d;
         public static final int terrain=0x7f060003;
         public static final int top_half=0x7f060005;
+        public static final int twitter=0x7f060017;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
         public static final int fragment_main_dummy=0x7f030001;
         public static final int list_details=0x7f030002;
+        public static final int share_layout=0x7f030003;
     }
     public static final class menu {
         public static final int main=0x7f0b0000;
@@ -219,6 +236,8 @@ containing a value of this type.
     public static final class string {
         public static final int action_reload=0x7f07001b;
         public static final int action_settings=0x7f07001a;
+        public static final int action_share=0x7f07001c;
+        public static final int already_registered=0x7f07002b;
         public static final int app_name=0x7f070019;
         /**   Title for notification shown when GooglePlayServices needs to be
         enabled for a application to work. [CHAR LIMIT=70] 
@@ -310,21 +329,39 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f070012;
-        public static final int pref_autorefrehsenabledSummary=0x7f07001e;
-        public static final int pref_autorefreshenabledTitle=0x7f07001d;
-        public static final int pref_autorefreshtimeDialog=0x7f070020;
-        public static final int pref_autorefreshtimeTitle=0x7f07001f;
+        /**   GCM 
+         */
+        public static final int error_config=0x7f07002a;
+        public static final int gcm_deleted=0x7f070031;
+        public static final int gcm_error=0x7f07002f;
+        public static final int gcm_message=0x7f07002e;
+        public static final int gcm_recoverable_error=0x7f070030;
+        public static final int gcm_registered=0x7f07002c;
+        public static final int gcm_unregistered=0x7f07002d;
+        public static final int options_clear=0x7f070039;
+        public static final int options_exit=0x7f07003a;
+        public static final int options_register=0x7f070037;
+        public static final int options_unregister=0x7f070038;
+        public static final int pref_autorefrehsenabledSummary=0x7f07001f;
+        public static final int pref_autorefreshenabledTitle=0x7f07001e;
+        public static final int pref_autorefreshtimeDialog=0x7f070021;
+        public static final int pref_autorefreshtimeTitle=0x7f070020;
         /**  Settings 
          */
-        public static final int pref_grouptitle=0x7f07001c;
-        public static final int pref_markercolorFREESummary=0x7f070024;
-        public static final int pref_markercolorFREETitle=0x7f070023;
-        public static final int pref_markercolorFREEdefault=0x7f070025;
-        public static final int pref_markercolorOCCUPIEDSummary=0x7f070027;
-        public static final int pref_markercolorOCCUPIEDTitle=0x7f070026;
-        public static final int pref_markercolorOCCUPIEDdefault=0x7f070028;
-        public static final int pref_markercolorSummary=0x7f070022;
-        public static final int pref_markercolorTitle=0x7f070021;
+        public static final int pref_grouptitle=0x7f07001d;
+        public static final int pref_markercolorFREESummary=0x7f070025;
+        public static final int pref_markercolorFREETitle=0x7f070024;
+        public static final int pref_markercolorFREEdefault=0x7f070026;
+        public static final int pref_markercolorOCCUPIEDSummary=0x7f070028;
+        public static final int pref_markercolorOCCUPIEDTitle=0x7f070027;
+        public static final int pref_markercolorOCCUPIEDdefault=0x7f070029;
+        public static final int pref_markercolorSummary=0x7f070023;
+        public static final int pref_markercolorTitle=0x7f070022;
+        public static final int server_register_error=0x7f070035;
+        public static final int server_registered=0x7f070033;
+        public static final int server_registering=0x7f070032;
+        public static final int server_unregister_error=0x7f070036;
+        public static final int server_unregistered=0x7f070034;
     }
     public static final class style {
         /** 
