@@ -21,15 +21,20 @@
         android:key="pref_markercolor"
         android:title="@string/pref_markercolorTitle" 
         android:summary="@string/pref_markercolorSummary" >
-    <EditTextPreference 
+     <ListPreference
         android:key="pref_markercolorFREE"
         android:title="@string/pref_markercolorFREETitle"
-        android:summary="@string/pref_markercolorFREESummary"
-        android:defaultValue="@string/pref_markercolorFREEdefault"  />
-    <EditTextPreference 
+        android:dialogTitle="@string/pref_markercolorFREESummary"
+        android:entries="@array/arr_markercolorFREE"
+        android:entryValues="@array/arr_markercolorFREE_values" 
+        android:defaultValue="@string/pref_markercolorFREEdefault"/>
+      <ListPreference
         android:key="pref_markercolorOCCUPIED"
         android:title="@string/pref_markercolorOCCUPIEDTitle"
-        android:summary="@string/pref_markercolorOCCUPIEDSummary"
-        android:defaultValue="@string/pref_markercolorOCCUPIEDdefault"  />
+        android:dialogTitle="@string/pref_markercolorOCCUPIEDSummary"
+        android:entries="@array/arr_markercolorOCCUPIED"
+        android:entryValues="@array/arr_markercolorOCCUPIED_values"
+        android:defaultValue="@string/pref_markercolorOCCUPIEDdefault" />
+   
     </PreferenceCategory>
 </PreferenceScreen>

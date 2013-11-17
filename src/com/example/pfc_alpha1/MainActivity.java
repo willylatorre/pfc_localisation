@@ -3,6 +3,8 @@ package com.example.pfc_alpha1;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -228,11 +230,6 @@ class ParkingAdapter extends ArrayAdapter<ParkingMarker> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		SharedPreferences sh = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-    	
-    	//Retrieving Color Preferences
-    	String color_free = sh.getString("pref_markercolorFREE",getString(R.string.pref_markercolorFREEdefault));
-    	String color_occupied = sh.getString("pref_markercolorOCCUPIED",getString(R.string.pref_markercolorOCCUPIEDdefault));
-		
 		
 		LayoutInflater inflater = context.getLayoutInflater();
 		View item = inflater.inflate(R.layout.list_details, null);
@@ -248,15 +245,47 @@ class ParkingAdapter extends ArrayAdapter<ParkingMarker> {
 		if(free){
 			lblStat.setText("Free");
 			//Color.rgb(8, 77, 13)
-			lblStat.setTextColor(Color.parseColor(color_free));
+			lblStat.setTextColor(Color.rgb(8, 77, 13));
 		}
 		else{
 			lblStat.setText("Occupied");
-			lblStat.setTextColor(Color.parseColor(color_occupied));
+			lblStat.setTextColor(Color.RED);
 		}
 		
 		return(item);
 	}
+	
+	private float retrieveColor (int index ){
+    	
+    	float marker_color;
+    	
+    	switch(index){
+    	case 0:
+    		marker_color = BitmapDescriptorFactory.HUE_AZURE;
+    	case 1:
+    		marker_color = BitmapDescriptorFactory.HUE_BLUE;
+    	case 2:
+    		marker_color = BitmapDescriptorFactory.HUE_CYAN;
+    	case 3:
+    		marker_color = BitmapDescriptorFactory.HUE_GREEN;
+    	case 4:
+    		marker_color = BitmapDescriptorFactory.HUE_MAGENTA;
+    	case 5:
+    		marker_color = BitmapDescriptorFactory.HUE_ORANGE;
+    	case 6:
+    		marker_color = BitmapDescriptorFactory.HUE_RED;
+    	case 7:
+    		marker_color = BitmapDescriptorFactory.HUE_ROSE;
+    	case 8:
+    		marker_color = BitmapDescriptorFactory.HUE_VIOLET;
+    	case 9:
+    		marker_color = BitmapDescriptorFactory.HUE_YELLOW;
+    	default:
+    		marker_color = BitmapDescriptorFactory.HUE_GREEN;
+
+    	}
+    	return marker_color;
+    }
 }
 
 /*
@@ -496,6 +525,22 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 		protected Boolean doInBackground(String... params) {
 	     	 ParkingParser parkingparser = new ParkingParser(params[0]);
 	    	 parkings = parkingparser.parse();	 
+	    	 
+	    	 Collections.sort(parkings, new Comparator<ParkingMarker>(){
+
+	    	        public int compare(ParkingMarker o1, ParkingMarker o2) {
+	    	            String p1, p2;
+	    	            if(o1.getFree()) p1="a";
+	    	        	else p1 = "b";
+	    	            if(o2.getFree()) p2="a";
+	    	        	else p2 = "b";
+	    	        	
+	    	            return p1.compareToIgnoreCase(p2);
+	    	        }
+
+	    	    });
+	    	 
+	    	 
 	        return true;
 	    }
 	
@@ -504,27 +549,32 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    	Log.d("PARSER","Estoy en el postExecute");
 	    	SharedPreferences sh = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 	    	
-	    	//Retrieving Color Preferences
-	    	String color_free = sh.getString("pref_markercolorFREE",getString(R.string.pref_markercolorFREEdefault));
-	    	String color_occupied = sh.getString("pref_markercolorOCCUPIED",getString(R.string.pref_markercolorOCCUPIEDdefault));
+	    	//Retrieving Color Preferences  	
+	    	int color_free_int = Integer.parseInt(sh.getString("pref_markercolorFREE",getString(R.string.pref_markercolorFREEdefault)));
+	    	int color_occupied_int =Integer.parseInt(sh.getString("pref_markercolorOCCUPIED",getString(R.string.pref_markercolorOCCUPIEDdefault)));
+	    	
+	    	float markercolor_free, markercolor_occupied, markercolor;
+	    	markercolor_free = retrieveColor(color_free_int);
+	    	markercolor_occupied = retrieveColor(color_occupied_int);
+	    	
 	    	
 	        //Go through each item on the list
 	    	for (ParkingMarker parking : parkings){
-	    		float markercolor2[] = new float[3];
+	    		
 	    		mLat = parking.getLat();
 	    		mLng = parking.getLng();
 	    		
 	    		//change the color depending on the status
-	    		if (parking.getFree()){
-			    	Color.colorToHSV(Color.parseColor(color_free), markercolor2);}
+	    		if (parking.getFree())
+			    	markercolor = markercolor_free;
 		    	else{
-			    	Color.colorToHSV(Color.parseColor(color_occupied), markercolor2);
+		    		markercolor = markercolor_occupied;
 	    		}
 	    		//adding a new marker on the map
 	        	Marker marker = mMap.addMarker(new MarkerOptions()
 	            .position(new LatLng(mLat,mLng ))
 	            .title(parking.getName())
-	    		.icon(BitmapDescriptorFactory.defaultMarker(markercolor2[0])));
+	    		.icon(BitmapDescriptorFactory.defaultMarker(markercolor)));
 	        	
 	        	//adding event to HashMap
 	        	eventMarkerMap.put(marker, parking);
@@ -544,6 +594,48 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    	
 	    	
 	    }
+	    
+	    private float retrieveColor (int index ){
+	    	
+	    	float marker_color = BitmapDescriptorFactory.HUE_GREEN;
+	    	
+	    	switch(index){
+	    	case 0:
+	    		marker_color = BitmapDescriptorFactory.HUE_AZURE;
+	    		break;
+	    	case 1:
+	    		marker_color = BitmapDescriptorFactory.HUE_BLUE;
+	    		break;
+	    	case 2:
+	    		marker_color = BitmapDescriptorFactory.HUE_CYAN;
+	    		break;
+	    	case 3:
+	    		marker_color = BitmapDescriptorFactory.HUE_GREEN;
+	    		break;
+	    	case 4:
+	    		marker_color = BitmapDescriptorFactory.HUE_MAGENTA;
+	    		break;
+	    	case 5:
+	    		marker_color = BitmapDescriptorFactory.HUE_ORANGE;
+	    		break;
+	    	case 6:
+	    		marker_color = BitmapDescriptorFactory.HUE_RED;
+	    		break;
+	    	case 7:
+	    		marker_color = BitmapDescriptorFactory.HUE_ROSE;
+	    		break;
+	    	case 8:
+	    		marker_color = BitmapDescriptorFactory.HUE_VIOLET;
+	    		break;
+	    	case 9:
+	    		marker_color = BitmapDescriptorFactory.HUE_YELLOW;
+	    		break;
+	    	}
+	    	return marker_color;
+	    }
+	    
+	    
+	    
 	    
 	    private void addListeners(){
 	    	// Preparing error message
