@@ -148,6 +148,13 @@ public boolean onOptionsItemSelected(MenuItem item) {
         .show();
     refresh();
     break;
+    
+  case R.id.options_register:
+      GCMRegistrar.register(this, SENDER_ID);
+      return true;
+  case R.id.options_unregister:
+      GCMRegistrar.unregister(this);
+      return true;
 
   default:
     break;
@@ -432,9 +439,13 @@ private void activateGCM (Bundle savedInstanceState){
      if (regId.equals("")) {
          // Automatically registers application on startup.
          GCMRegistrar.register(this, SENDER_ID);
+         Toast.makeText(this, "GCM Registering.",
+                 Toast.LENGTH_SHORT).show();
      } else {
          // Device is already registered on GCM, check server.
          if (GCMRegistrar.isRegisteredOnServer(this)) {
+        	 Toast.makeText(this, "GCM Already registered.",
+                     Toast.LENGTH_SHORT).show();
              // Skips registration.
         	 // already registered
          } else {
