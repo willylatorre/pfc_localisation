@@ -36,7 +36,7 @@ public class ParkingHandler extends DefaultHandler {
         super.startElement(uri, localName, name, attributes);
  
         if (localName.equals("parking")) {
-            parkingActual = new ParkingMarker(name, 0, 0, true);
+            parkingActual = new ParkingMarker(name, 0, 0, true,0);
         }
     }
 	

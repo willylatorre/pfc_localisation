@@ -2,10 +2,13 @@ package com.example.pfc_alpha1;
 
 
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -71,13 +74,19 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MainActivity extends FragmentActivity implements 
     GooglePlayServicesClient.ConnectionCallbacks, 
     GooglePlayServicesClient.OnConnectionFailedListener{
+
 	
+// General Variables
 public static final String URL = "https://dl.dropboxusercontent.com/u/123539/parkingpositions.xml"; 	
+public final static double EARTH_RADIUS = 6371000;
+public  int RADIUS_DIST = 2000;
+public boolean FILTERING_RADIUS = false;
 
 //Map Variables
 private SupportMapFragment mapFragment;
 private GoogleMap mMap;
 private double mLat, mLng;
+private double aLat, aLng;
 private LocationClient mLocationClient;
 boolean retrieved_completed = false;
 HashMap<Marker, ParkingMarker> eventMarkerMap = new HashMap<Marker, ParkingMarker>();  
@@ -87,6 +96,7 @@ List<ParkingMarker> parkings_data ;
 ParkingAdapter adapter;
 private ListView lstOptions;
 private List<ParkingMarker> parkings;
+
 
 // GCM
 TextView mDisplay;
@@ -237,6 +247,22 @@ class ParkingAdapter extends ArrayAdapter<ParkingMarker> {
 		//We retrieve the name of the parking
 		TextView lblTit = (TextView)item.findViewById(R.id.LblTitle);
 		lblTit.setText(parkings_data.get(position).getName());
+		
+		//We retrieve the distance separing it from us
+		TextView lblDist = (TextView)item.findViewById(R.id.LblDist);
+		// ¿meters or km?
+		double dist_num = Math.floor(parkings_data.get(position).getDist());
+		String distance;
+		if (dist_num<1000)
+		distance = String.valueOf(dist_num)+" m";
+		else{
+			dist_num=dist_num/1000;
+			dist_num= Math.round(dist_num*100)/100.00;
+		distance = String.valueOf(dist_num)+" km";
+		}
+		lblDist.setText(distance);
+		
+		
 		//We retrieve the status of the parking
 		TextView lblStat = (TextView)item.findViewById(R.id.LblStatus);
 		boolean free;
@@ -367,6 +393,9 @@ public void refresh(){
 	  //We call to an auxiliar Async method to retrieve all the information followin the Google criteria
     RetrieveFeed task = new RetrieveFeed();
     mMap.clear();
+    Location location = mLocationClient.getLastLocation();
+    mLat = location.getLatitude();
+    mLng = location.getLongitude();
     task.execute(URL);
   
 }
@@ -405,7 +434,9 @@ public void onConnected(Bundle dataBundle) {
     // Display the connection status
     Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
     Location location = mLocationClient.getLastLocation();
-    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+    mLat = location.getLatitude();
+    mLng = location.getLongitude();
+    LatLng latLng = new LatLng(mLat, mLng);
     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 13);
     mMap.animateCamera(cameraUpdate);
 }
@@ -526,6 +557,7 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	     	 ParkingParser parkingparser = new ParkingParser(params[0]);
 	    	 parkings = parkingparser.parse();	 
 	    	 
+	    	 
 	    	 Collections.sort(parkings, new Comparator<ParkingMarker>(){
 
 	    	        public int compare(ParkingMarker o1, ParkingMarker o2) {
@@ -535,7 +567,7 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    	            if(o2.getFree()) p2="a";
 	    	        	else p2 = "b";
 	    	        	
-	    	            return p1.compareToIgnoreCase(p2);
+	    	            return p1.compareTo(p2);
 	    	        }
 
 	    	    });
@@ -549,6 +581,11 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    	Log.d("PARSER","Estoy en el postExecute");
 	    	SharedPreferences sh = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 	    	
+	    	// Retrieving Filtering options
+	    	
+	    	FILTERING_RADIUS = sh.getBoolean("pref_radiusenabled", false);
+	    	RADIUS_DIST = Integer.parseInt(sh.getString("pref_radius_dist", getString(R.string.pref_radiusdistDefault)));
+	    	
 	    	//Retrieving Color Preferences  	
 	    	int color_free_int = Integer.parseInt(sh.getString("pref_markercolorFREE",getString(R.string.pref_markercolorFREEdefault)));
 	    	int color_occupied_int =Integer.parseInt(sh.getString("pref_markercolorOCCUPIED",getString(R.string.pref_markercolorOCCUPIEDdefault)));
@@ -559,25 +596,37 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    	
 	    	
 	        //Go through each item on the list
-	    	for (ParkingMarker parking : parkings){
+	    	Iterator<ParkingMarker> i= parkings.iterator();
+	    	//for (ParkingMarker parking : parkings){
+	    	while(i.hasNext()){
+	    		ParkingMarker parking = i.next();
 	    		
-	    		mLat = parking.getLat();
-	    		mLng = parking.getLng();
+	    		aLat = parking.getLat();
+	    		aLng = parking.getLng();
 	    		
-	    		//change the color depending on the status
-	    		if (parking.getFree())
-			    	markercolor = markercolor_free;
-		    	else{
-		    		markercolor = markercolor_occupied;
+	    		
+	    		// Calculating the distance separing it from my position
+	    		double dista = distance(aLat,aLng,mLat,mLng);
+	    		parking.setDist(dista);
+	    		// Filtering
+	    		 if(dista>RADIUS_DIST && FILTERING_RADIUS){
+	    		 i.remove();
+	    		 }else{	
+		    		//change the color depending on the status
+		    		if (parking.getFree())
+				    	markercolor = markercolor_free;
+			    	else{
+			    		markercolor = markercolor_occupied;
+		    		}
+		    		//adding a new marker on the map
+		        	Marker marker = mMap.addMarker(new MarkerOptions()
+		            .position(new LatLng(aLat,aLng ))
+		            .title(parking.getName())
+		    		.icon(BitmapDescriptorFactory.defaultMarker(markercolor)));
+		        	
+		        	//adding event to HashMap
+		        	eventMarkerMap.put(marker, parking);
 	    		}
-	    		//adding a new marker on the map
-	        	Marker marker = mMap.addMarker(new MarkerOptions()
-	            .position(new LatLng(mLat,mLng ))
-	            .title(parking.getName())
-	    		.icon(BitmapDescriptorFactory.defaultMarker(markercolor)));
-	        	
-	        	//adding event to HashMap
-	        	eventMarkerMap.put(marker, parking);
 	        }
 	    	
 	    	//Add the list
@@ -632,6 +681,24 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    		break;
 	    	}
 	    	return marker_color;
+	    }
+	    
+	    
+	    public double distance(double lat1, double lng1, double lat2, double lng2){
+	    	
+	    	double distance=0;
+	    	
+	    	//Converting to radians
+	    	lat1= Math.toRadians(lat1);
+	    	lat2= Math.toRadians(lat2);
+	    	lng1 = Math.toRadians(lng1);
+	    	lng2 = Math.toRadians(lng2);
+	    	
+	    	double x = (lng2-lng1)*Math.cos((lat1+lat2)/2);
+	    	double y = (lat2-lat1);
+	    	
+	    	distance = Math.sqrt(x*x + y*y)*EARTH_RADIUS;
+	    	return distance;
 	    }
 	    
 	    

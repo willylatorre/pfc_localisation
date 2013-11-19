@@ -36,7 +36,7 @@ public class ShareNotification extends Activity{
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    // Inflate the menu items for use in the action bar
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.main, menu);
+	    inflater.inflate(R.menu.gcm_menu, menu);
 	    return super.onCreateOptionsMenu(menu);
 	}
 
@@ -63,6 +63,7 @@ public class ShareNotification extends Activity{
 	    PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 	    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 	    
+		setContentView(R.layout.share_layout);
 	    onNewIntent(getIntent());
 	    
 	}
@@ -72,7 +73,7 @@ public class ShareNotification extends Activity{
 	    Bundle extras = intent.getExtras();
 	    if(extras != null){
 	    	
-	    	setContentView(R.layout.share_layout);
+	    
 	    	
 	    	gcm_type = extras.getString("type");
 	 		

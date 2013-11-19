@@ -15,6 +15,15 @@
 	    android:hint="Parking Casa Adri"
 	    android:textSize="20dp"
 	    android:textStyle="bold" />
+	
+	<TextView
+	    android:id="@+id/LblDist"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="2"
+	    android:hint="300m"
+	    android:textSize="15dp"
+	    android:textStyle="normal" />
 
 	<TextView
 	    android:id="@+id/LblStatus"

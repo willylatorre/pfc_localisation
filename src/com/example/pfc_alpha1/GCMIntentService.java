@@ -144,8 +144,8 @@ public class GCMIntentService extends GCMBaseIntentService {
         							.setContentIntent(pendingNotificationIntent)
         							.setContentTitle("OJO!! Ha pasado algo")
         							.setContentText(message)
-        							.setSmallIcon(R.drawable.ic_stat_gcm)
-        							.setLargeIcon(BitmapFactory.decodeResource(res,R.drawable.ic_stat_gcm))
+        							.setSmallIcon(R.drawable.ic_gcm_noti)
+        							.setLargeIcon(BitmapFactory.decodeResource(res,R.drawable.ic_gcm_noti))
         							.setAutoCancel(true)
         							.build();
         

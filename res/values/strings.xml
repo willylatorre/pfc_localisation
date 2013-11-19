@@ -15,6 +15,12 @@
     <string name="pref_autorefrehsenabledSummary">Autorefresh the list of parkings available. Default: 20min</string>
     <string name="pref_autorefreshtimeTitle">Autorefresh Time</string>
     <string name="pref_autorefreshtimeDialog">How much time do you want to wait between refreshs?</string>
+    
+    <string name="pref_radiusenabledTitle">Filter by radius</string>
+    <string name="pref_radiusenabledSummary">Only show parkings inside a radius. Default: 2 km</string>
+    <string name="pref_radiusdistTitle">Radius distance (in meters)</string>
+    <string name="pref_radiusdistDefault">2000</string>
+    
     <string name="pref_markercolorTitle">Markers Color</string>
     <string name="pref_markercolorSummary">Pic the color for your markers</string>
     

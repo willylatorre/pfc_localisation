@@ -16,6 +16,20 @@
         android:dialogTitle="@string/pref_autorefreshtimeDialog"
         android:entries="@array/autorefreshtime"
         android:entryValues="@array/autorefreshtime_values" />
+    
+     <CheckBoxPreference
+        android:key="pref_radiusenabled"
+        android:title="@string/pref_radiusenabledTitle"
+        android:summary="@string/pref_radiusenabledSummary"
+        android:defaultValue="false" />
+    <EditTextPreference
+        android:dependency="pref_radiusenabled"
+        android:key="pref_radius_dist"
+        android:title="@string/pref_radiusdistTitle"
+        android:defaultValue="@string/pref_radiusdistDefault"  />
+    
+    
+    
     </PreferenceCategory>
     <PreferenceCategory 
         android:key="pref_markercolor"

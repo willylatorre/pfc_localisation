@@ -6,14 +6,18 @@ public class ParkingMarker {
 	private double lat;
 	private double lng;
 	private boolean free;
+	private double dist;
 
 	
-	public ParkingMarker(String name, double lat, double lng, boolean free) {
+	
+
+	public ParkingMarker(String name, double lat, double lng, boolean free, double dist) {
 		super();
 		this.name = name;
 		this.lat = lat;
 		this.lng = lng;
 		this.free = free;
+		this.dist = dist;
 	}
 	
 	public String getName() {
@@ -39,6 +43,14 @@ public class ParkingMarker {
 	}
 	public void setFree(Boolean free) {
 		this.free = free;
+	}
+	
+	public double getDist() {
+		return dist;
+	}
+
+	public void setDist(double dist) {
+		this.dist = dist;
 	}
 	
 }
