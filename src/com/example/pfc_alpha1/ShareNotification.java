@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,6 +33,7 @@ public class ShareNotification extends Activity{
 	public static String gcm_time_parsed;
 	public static String gcm_lat;
 	public static String gcm_lng;
+	public static String gcm_extras;
 	
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    // Inflate the menu items for use in the action bar
@@ -79,17 +81,21 @@ public class ShareNotification extends Activity{
 	 		
 	    	gcm_time = extras.getString("time");
 	 		
+	    	Timestamp tstmp = Timestamp.valueOf(gcm_time);
 	    	
-	    	Calendar c = Calendar.getInstance();
-	    	if (gcm_time!=null){
-	 		long timestampLong = Long.parseLong(gcm_time);
-	 		Date d = new Date(timestampLong);
-	 		c.setTime(d);
-	    	gcm_time_parsed  = c.HOUR+":"+c.MINUTE;
+	    	
+	    	//Calendar c = Calendar.getInstance();
+	    	Date d = new Date();
+	    	if (tstmp!=null){
+	 	//	long timestampLong = Long.parseLong(gcm_time);
+	 		
+	 		d.setTime(tstmp.getTime());
+	 	//	c.setTime(d);
+	    	gcm_time_parsed  = d.toString();
 			
 	    	}else{
 	    		gcm_time = "no time";
-	    		gcm_time_parsed = c.HOUR+":"+c.MINUTE;
+	    		gcm_time_parsed = d.toString() ;
 	    		
 	    	}
 	 		
@@ -113,6 +119,8 @@ public class ShareNotification extends Activity{
 	 		String country = addresses.get(0).getAddressLine(2);
 	 		String place = address+","+city;
 	 		
+	 		gcm_extras = extras.getString("extras");
+	 		
 	 		
 	       
 	            // extract the extra-data in the Notification
@@ -122,9 +130,17 @@ public class ShareNotification extends Activity{
 	            p_loc_desc.setText(place);
 	            TextView p_time_desc = (TextView) findViewById(R.id.p_time_desc);
 	            p_time_desc.setText(gcm_time_parsed.toString());
+	            TextView p_extras = (TextView) findViewById(R.id.p_extras);
+	            p_extras.setText(gcm_extras);
 	            
-	            final String message = "Atención: "+gcm_type+" en "+place+" a las "+gcm_time_parsed;
-	            
+	            String  message_build="";
+	            if (!gcm_extras.isEmpty()){
+	            	 message_build = "Atención: "+gcm_type+" en "+place + ". Contenido extra: "+gcm_extras;
+	            }
+	            else{
+	            	 message_build = "Atención: "+gcm_type+" en "+place;
+	            }
+	            final String message = message_build;
 	           
 	            // Share button
 	            Button shareButton = (Button) findViewById(R.id.share);

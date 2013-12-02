@@ -558,20 +558,42 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    	 parkings = parkingparser.parse();	 
 	    	 
 	    	 
-	    	 Collections.sort(parkings, new Comparator<ParkingMarker>(){
-
+	    	Comparator<ParkingMarker> comparatorFree =  new Comparator<ParkingMarker>(){	    		 	
 	    	        public int compare(ParkingMarker o1, ParkingMarker o2) {
 	    	            String p1, p2;
+	    	            
+	    	            int result;
+	    	            
 	    	            if(o1.getFree()) p1="a";
 	    	        	else p1 = "b";
 	    	            if(o2.getFree()) p2="a";
 	    	        	else p2 = "b";
 	    	        	
-	    	            return p1.compareTo(p2);
-	    	        }
-
-	    	    });
+	    	            result =p1.compareTo(p2);
+	    	           return result;
+	    	         }};
+	    	         
+	    	         
+         Comparator<ParkingMarker> comparatorDist =  new Comparator<ParkingMarker>(){	    		 	
+	        
+        	 @Override
+        	 public int compare(ParkingMarker o1, ParkingMarker o2) {
+	            
+	            int p1, p2;
+	            int result;
+	            p1= (int)o1.getDist();
+	            p2= (int)o2.getDist();
+	            
+	           return p2-p1;
+	         }};
+	 	    	          
 	    	 
+	    	 ComparatorChain chain = new ComparatorChain();
+	    	 chain.addComparator(comparatorFree);
+	    	 chain.addComparator(comparatorDist);
+	    	  	   
+	    		 
+	    	 Collections.sort(parkings,chain);
 	    	 
 	        return true;
 	    }

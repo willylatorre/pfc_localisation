@@ -18,6 +18,7 @@ package com.example.pfc_alpha1;
 import static com.example.pfc_alpha1.CommonUtilities.SENDER_ID;
 import static com.example.pfc_alpha1.CommonUtilities.displayMessage;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import android.app.Notification;
@@ -44,6 +45,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	public static String gcm_time;
 	public static String gcm_lat;
 	public static String gcm_lng;
+	public static String gcm_extras;
 	
 
     @SuppressWarnings("hiding")
@@ -84,10 +86,14 @@ public class GCMIntentService extends GCMBaseIntentService {
         Log.i(TAG, "Received message");
         
         //Retrieving variables
-        gcm_type=intent.getStringExtra("type");
-    	gcm_time=intent.getStringExtra("time");       
-        gcm_lat=intent.getStringExtra("lat");
-    	gcm_lng=intent.getStringExtra("lng");
+        gcm_type=intent.getStringExtra("eventType");
+        
+        //HARDCODE Timestamp
+    	Date time = new Date();
+        gcm_time=  new Timestamp(time.getTime()).toString();
+        gcm_lat=intent.getStringExtra("eventLat");
+    	gcm_lng=intent.getStringExtra("eventLng");
+    	gcm_extras = intent.getStringExtra("eventExtras");
     	
     	// Generating message
         String message = "Evento: "+gcm_type+"!! +info";
@@ -135,6 +141,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         notificationIntent.putExtra("time", gcm_time);
         notificationIntent.putExtra("lat", gcm_lat);
         notificationIntent.putExtra("lng", gcm_lng);
+        notificationIntent.putExtra("extras", gcm_extras);
         // set intent so it does not start a new activity
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);

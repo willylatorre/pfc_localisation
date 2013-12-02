@@ -73,6 +73,12 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/p_extras"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Extras" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >

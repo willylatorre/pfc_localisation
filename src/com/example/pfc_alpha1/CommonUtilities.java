@@ -27,7 +27,7 @@ public final class CommonUtilities {
     /**
      * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
      */
-    static final String SERVER_URL = "http://ec2-54-201-81-12.us-west-2.compute.amazonaws.com:8080/gcm-demo";
+    static final String SERVER_URL = "http://ec2-54-201-81-12.us-west-2.compute.amazonaws.com:8080/PFC_GCM_server";
 
     /**
      * Google API project id registered to use GCM.
