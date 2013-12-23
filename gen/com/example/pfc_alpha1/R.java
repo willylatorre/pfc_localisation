@@ -9,6 +9,10 @@ package com.example.pfc_alpha1;
 
 public final class R {
     public static final class array {
+        public static final int arr_markercolorFREE=0x7f090002;
+        public static final int arr_markercolorFREE_values=0x7f090003;
+        public static final int arr_markercolorOCCUPIED=0x7f090004;
+        public static final int arr_markercolorOCCUPIED_values=0x7f090005;
         public static final int autorefreshtime=0x7f090000;
         public static final int autorefreshtime_values=0x7f090001;
     }
@@ -155,6 +159,7 @@ containing a value of this type.
         public static final int zOrderOnTop=0x7f01000f;
     }
     public static final class color {
+        public static final int blanco=0x7f05000b;
         public static final int common_action_bar_splitter=0x7f050009;
         /**  Sign-in Button Colors 
          */
@@ -167,8 +172,9 @@ containing a value of this type.
         public static final int common_signin_btn_light_text_disabled=0x7f050006;
         public static final int common_signin_btn_light_text_focused=0x7f050007;
         public static final int common_signin_btn_light_text_pressed=0x7f050005;
-        public static final int common_signin_btn_text_dark=0x7f05000a;
-        public static final int common_signin_btn_text_light=0x7f05000b;
+        public static final int common_signin_btn_text_dark=0x7f05000c;
+        public static final int common_signin_btn_text_light=0x7f05000d;
+        public static final int gris=0x7f05000a;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -208,45 +214,50 @@ containing a value of this type.
         public static final int ic_action_reload=0x7f020018;
         public static final int ic_action_search=0x7f020019;
         public static final int ic_action_settings=0x7f02001a;
-        public static final int ic_launcher=0x7f02001b;
-        public static final int ic_plusone_medium_off_client=0x7f02001c;
-        public static final int ic_plusone_small_off_client=0x7f02001d;
-        public static final int ic_plusone_standard_off_client=0x7f02001e;
-        public static final int ic_plusone_tall_off_client=0x7f02001f;
-        public static final int ic_stat_gcm=0x7f020020;
+        public static final int ic_call=0x7f02001b;
+        public static final int ic_extras=0x7f02001c;
+        public static final int ic_gcm=0x7f02001d;
+        public static final int ic_gcm_noti=0x7f02001e;
+        public static final int ic_launcher=0x7f02001f;
+        public static final int ic_plusone_medium_off_client=0x7f020020;
+        public static final int ic_plusone_small_off_client=0x7f020021;
+        public static final int ic_plusone_standard_off_client=0x7f020022;
+        public static final int ic_plusone_tall_off_client=0x7f020023;
+        public static final int ic_share=0x7f020024;
+        public static final int ic_stat_gcm=0x7f020025;
     }
     public static final class id {
-        public static final int LblStatus=0x7f06000b;
+        public static final int LblDist=0x7f06000b;
+        public static final int LblStatus=0x7f06000c;
         public static final int LblTitle=0x7f06000a;
         public static final int LstParkings=0x7f060006;
-        public static final int action_reload=0x7f06001a;
+        public static final int action_reload=0x7f06001f;
         public static final int action_settings=0x7f06001b;
-        public static final int action_share=0x7f060019;
+        public static final int action_share=0x7f06001e;
         public static final int bot_half=0x7f060007;
-        public static final int call=0x7f060018;
-        public static final int details_one=0x7f06000e;
-        public static final int details_three=0x7f060014;
-        public static final int details_two=0x7f060011;
+        public static final int buttons_layout=0x7f060014;
+        public static final int call=0x7f060016;
+        public static final int extras=0x7f060015;
+        public static final int fill_text_1=0x7f060011;
         public static final int hybrid=0x7f060004;
-        public static final int main=0x7f06000c;
+        public static final int main=0x7f06000d;
         public static final int map=0x7f060008;
         public static final int none=0x7f060000;
         public static final int normal=0x7f060001;
-        public static final int options_clear=0x7f06001e;
-        public static final int options_exit=0x7f06001f;
+        public static final int notif_layout=0x7f06000f;
         public static final int options_register=0x7f06001c;
         public static final int options_unregister=0x7f06001d;
-        public static final int p_loc=0x7f060012;
-        public static final int p_loc_desc=0x7f060013;
-        public static final int p_time=0x7f060015;
-        public static final int p_time_desc=0x7f060016;
-        public static final int p_type=0x7f06000f;
+        public static final int p_loc_desc=0x7f060012;
+        public static final int p_time_desc=0x7f060013;
         public static final int p_type_desc=0x7f060010;
         public static final int satellite=0x7f060002;
         public static final int section_label=0x7f060009;
-        public static final int share=0x7f060017;
-        public static final int share_title=0x7f06000d;
+        public static final int share=0x7f06001a;
+        public static final int shareMess=0x7f060018;
+        public static final int shareMessage=0x7f060017;
+        public static final int share_title=0x7f06000e;
         public static final int terrain=0x7f060003;
+        public static final int textView1=0x7f060019;
         public static final int top_half=0x7f060005;
     }
     public static final class integer {
@@ -259,14 +270,14 @@ containing a value of this type.
         public static final int share_layout=0x7f030003;
     }
     public static final class menu {
-        public static final int main=0x7f0c0000;
-        public static final int options_menu=0x7f0c0001;
+        public static final int gcm_menu=0x7f0c0000;
+        public static final int main=0x7f0c0001;
     }
     public static final class string {
         public static final int action_reload=0x7f07001c;
         public static final int action_settings=0x7f07001b;
         public static final int action_share=0x7f07001d;
-        public static final int already_registered=0x7f07002d;
+        public static final int already_registered=0x7f070031;
         public static final int app_name=0x7f07001a;
         /**   Title for notification shown when GooglePlayServices needs to be
         enabled for a application to work. [CHAR LIMIT=70] 
@@ -361,17 +372,17 @@ containing a value of this type.
         public static final int common_signin_button_text_long=0x7f070012;
         /**   GCM 
          */
-        public static final int error_config=0x7f07002c;
-        public static final int gcm_deleted=0x7f070033;
-        public static final int gcm_error=0x7f070031;
-        public static final int gcm_message=0x7f070030;
-        public static final int gcm_recoverable_error=0x7f070032;
-        public static final int gcm_registered=0x7f07002e;
-        public static final int gcm_unregistered=0x7f07002f;
-        public static final int options_clear=0x7f07003b;
-        public static final int options_exit=0x7f07003c;
-        public static final int options_register=0x7f070039;
-        public static final int options_unregister=0x7f07003a;
+        public static final int error_config=0x7f070030;
+        public static final int gcm_deleted=0x7f070037;
+        public static final int gcm_error=0x7f070035;
+        public static final int gcm_message=0x7f070034;
+        public static final int gcm_recoverable_error=0x7f070036;
+        public static final int gcm_registered=0x7f070032;
+        public static final int gcm_unregistered=0x7f070033;
+        public static final int options_clear=0x7f07003f;
+        public static final int options_exit=0x7f070040;
+        public static final int options_register=0x7f07003d;
+        public static final int options_unregister=0x7f07003e;
         public static final int pref_autorefrehsenabledSummary=0x7f070021;
         public static final int pref_autorefreshenabledTitle=0x7f070020;
         public static final int pref_autorefreshtimeDialog=0x7f070023;
@@ -379,20 +390,32 @@ containing a value of this type.
         /**  Settings 
          */
         public static final int pref_grouptitle=0x7f07001f;
-        public static final int pref_markercolorFREESummary=0x7f070027;
-        public static final int pref_markercolorFREETitle=0x7f070026;
-        public static final int pref_markercolorFREEdefault=0x7f070028;
-        public static final int pref_markercolorOCCUPIEDSummary=0x7f07002a;
-        public static final int pref_markercolorOCCUPIEDTitle=0x7f070029;
-        public static final int pref_markercolorOCCUPIEDdefault=0x7f07002b;
-        public static final int pref_markercolorSummary=0x7f070025;
-        public static final int pref_markercolorTitle=0x7f070024;
+        public static final int pref_markercolorFREESummary=0x7f07002b;
+        public static final int pref_markercolorFREETitle=0x7f07002a;
+        public static final int pref_markercolorFREEdefault=0x7f07002c;
+        public static final int pref_markercolorOCCUPIEDSummary=0x7f07002e;
+        public static final int pref_markercolorOCCUPIEDTitle=0x7f07002d;
+        public static final int pref_markercolorOCCUPIEDdefault=0x7f07002f;
+        public static final int pref_markercolorSummary=0x7f070029;
+        public static final int pref_markercolorTitle=0x7f070028;
+        public static final int pref_radiusdistDefault=0x7f070027;
+        public static final int pref_radiusdistTitle=0x7f070026;
+        public static final int pref_radiusenabledSummary=0x7f070025;
+        public static final int pref_radiusenabledTitle=0x7f070024;
         public static final int send_to=0x7f07001e;
-        public static final int server_register_error=0x7f070037;
-        public static final int server_registered=0x7f070035;
-        public static final int server_registering=0x7f070034;
-        public static final int server_unregister_error=0x7f070038;
-        public static final int server_unregistered=0x7f070036;
+        public static final int server_register_error=0x7f07003b;
+        public static final int server_registered=0x7f070039;
+        public static final int server_registering=0x7f070038;
+        public static final int server_unregister_error=0x7f07003c;
+        public static final int server_unregistered=0x7f07003a;
+        public static final int sh_example_address=0x7f070044;
+        public static final int sh_example_time=0x7f070045;
+        public static final int sh_example_type=0x7f070042;
+        public static final int sh_fill_1=0x7f070043;
+        public static final int sh_share=0x7f070046;
+        /**   Sharing 
+         */
+        public static final int sh_title=0x7f070041;
     }
     public static final class style {
         /** 

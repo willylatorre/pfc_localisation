@@ -51,5 +51,13 @@
     <string name="options_clear">Clear</string>
     <string name="options_exit">Exit</string>
     
+    <!--  Sharing -->
+    <string name="sh_title">Atention!</string>
+    <string name="sh_example_type">Accident</string>
+    <string name="sh_fill_1">in</string>
+    <string name="sh_example_address">Carrer Santa Maria Cervelló, Universistat Politécnica de Catalunya</string>
+    <string name="sh_example_time">Mon Dec 02 22:18:27 CET 2013</string>
+    <string name="sh_share">Share the info</string>
+    
     
 </resources>

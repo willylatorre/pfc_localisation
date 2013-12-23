@@ -46,6 +46,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	public static String gcm_lat;
 	public static String gcm_lng;
 	public static String gcm_extras;
+	public static String gcm_extras_type;
 	
 
     @SuppressWarnings("hiding")
@@ -94,6 +95,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         gcm_lat=intent.getStringExtra("eventLat");
     	gcm_lng=intent.getStringExtra("eventLng");
     	gcm_extras = intent.getStringExtra("eventExtras");
+    	gcm_extras_type = intent.getStringExtra("eventExtras_type");
     	
     	// Generating message
         String message = "Evento: "+gcm_type+"!! +info";
@@ -142,6 +144,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         notificationIntent.putExtra("lat", gcm_lat);
         notificationIntent.putExtra("lng", gcm_lng);
         notificationIntent.putExtra("extras", gcm_extras);
+        notificationIntent.putExtra("extras_type", gcm_extras_type);
         // set intent so it does not start a new activity
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);

@@ -274,7 +274,7 @@ class ParkingAdapter extends ArrayAdapter<ParkingMarker> {
 			lblStat.setTextColor(Color.rgb(8, 77, 13));
 		}
 		else{
-			lblStat.setText("Occupied");
+			lblStat.setText("Full");
 			lblStat.setTextColor(Color.RED);
 		}
 		
