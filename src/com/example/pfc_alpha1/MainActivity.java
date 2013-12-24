@@ -96,6 +96,9 @@ List<ParkingMarker> parkings_data ;
 ParkingAdapter adapter;
 private ListView lstOptions;
 private List<ParkingMarker> parkings;
+private List<ParkingMarker> parkings_comb;
+private List<ParkingMarker> free_parkings;
+private List<ParkingMarker> full_parkings;
 
 
 // GCM
@@ -199,6 +202,9 @@ protected void onCreate(Bundle savedInstanceState) {
     
     //We create a list of parkings
     parkings = new ArrayList<ParkingMarker>();
+    free_parkings = new ArrayList<ParkingMarker>();
+    full_parkings = new ArrayList<ParkingMarker>();
+    
     
     //We call to an auxiliar Async method to retrieve all the information followin the Google criteria
     RetrieveFeed task = new RetrieveFeed();
@@ -557,44 +563,60 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	     	 ParkingParser parkingparser = new ParkingParser(params[0]);
 	    	 parkings = parkingparser.parse();	 
 	    	 
+	    	 //Initializing for refresh
+	    	 free_parkings = new ArrayList<ParkingMarker>();
+	    	 full_parkings = new ArrayList<ParkingMarker>();
 	    	 
-	    	Comparator<ParkingMarker> comparatorFree =  new Comparator<ParkingMarker>(){	    		 	
-	    	        public int compare(ParkingMarker o1, ParkingMarker o2) {
-	    	            String p1, p2;
-	    	            
-	    	            int result;
-	    	            
-	    	            if(o1.getFree()) p1="a";
-	    	        	else p1 = "b";
-	    	            if(o2.getFree()) p2="a";
-	    	        	else p2 = "b";
-	    	        	
-	    	            result =p1.compareTo(p2);
-	    	           return result;
-	    	         }};
-	    	         
-	    	         
-         Comparator<ParkingMarker> comparatorDist =  new Comparator<ParkingMarker>(){	    		 	
-	        
-        	 @Override
-        	 public int compare(ParkingMarker o1, ParkingMarker o2) {
-	            
-	            int p1, p2;
-	            int result;
-	            p1= (int)o1.getDist();
-	            p2= (int)o2.getDist();
-	            
-	           return p2-p1;
-	         }};
-	 	    	          
 	    	 
-	    	 ComparatorChain chain = new ComparatorChain();
-	    	 chain.addComparator(comparatorFree);
-	    	 chain.addComparator(comparatorDist);
-	    	  	   
-	    		 
-	    	 Collections.sort(parkings,chain);
+	    	// Retrieving Filtering options
+	    	 SharedPreferences sh = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+		    	FILTERING_RADIUS = sh.getBoolean("pref_radiusenabled", false);
+		    	RADIUS_DIST = Integer.parseInt(sh.getString("pref_radius_dist", getString(R.string.pref_radiusdistDefault)));
+		    	
 	    	 
+	  //Go through each item on the list
+		Iterator<ParkingMarker> i= parkings.iterator();
+		    	//for (ParkingMarker parking : parkings){
+		    	while(i.hasNext()){
+		    		ParkingMarker parking = i.next();
+		    		
+		    		aLat = parking.getLat();
+		    		aLng = parking.getLng();
+		    		
+		    		
+		    		// Calculating the distance separing it from my position
+		    		double dista = distance(aLat,aLng,mLat,mLng);
+		    		parking.setDist(dista);
+		    		// Filtering
+		    		 if(dista>RADIUS_DIST && FILTERING_RADIUS){
+		    		 i.remove();
+		    		 }else{	
+			    		//change the color depending on the status
+			    		if (parking.getFree())
+					    	free_parkings.add(parking);
+				    	else{
+				    		full_parkings.add(parking);
+			    		}
+			    		
+		    		}
+		      }
+		    	
+	    	 
+	    	 // Sort by distance
+	    	Comparator<ParkingMarker> comparatorDist =  new Comparator<ParkingMarker>(){	    		 	
+	    	    @Override    
+	    		public int compare(ParkingMarker o1, ParkingMarker o2) {
+	    	    	return Double.compare(o1.getDist(),o2.getDist());
+	    	  }};
+	    	 
+	    	 Collections.sort(free_parkings,comparatorDist);
+	    	 Collections.sort(full_parkings,comparatorDist);
+
+	    	 parkings_comb = new ArrayList<ParkingMarker>();
+	    	 parkings_comb.addAll(free_parkings);
+	    	 parkings_comb.addAll(full_parkings);
+
+
 	        return true;
 	    }
 	
@@ -603,10 +625,6 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    	Log.d("PARSER","Estoy en el postExecute");
 	    	SharedPreferences sh = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 	    	
-	    	// Retrieving Filtering options
-	    	
-	    	FILTERING_RADIUS = sh.getBoolean("pref_radiusenabled", false);
-	    	RADIUS_DIST = Integer.parseInt(sh.getString("pref_radius_dist", getString(R.string.pref_radiusdistDefault)));
 	    	
 	    	//Retrieving Color Preferences  	
 	    	int color_free_int = Integer.parseInt(sh.getString("pref_markercolorFREE",getString(R.string.pref_markercolorFREEdefault)));
@@ -617,23 +635,11 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    	markercolor_occupied = retrieveColor(color_occupied_int);
 	    	
 	    	
-	        //Go through each item on the list
-	    	Iterator<ParkingMarker> i= parkings.iterator();
-	    	//for (ParkingMarker parking : parkings){
-	    	while(i.hasNext()){
-	    		ParkingMarker parking = i.next();
+	    	for (ParkingMarker parking : parkings_comb){
 	    		
-	    		aLat = parking.getLat();
-	    		aLng = parking.getLng();
-	    		
-	    		
-	    		// Calculating the distance separing it from my position
-	    		double dista = distance(aLat,aLng,mLat,mLng);
-	    		parking.setDist(dista);
-	    		// Filtering
-	    		 if(dista>RADIUS_DIST && FILTERING_RADIUS){
-	    		 i.remove();
-	    		 }else{	
+		    		aLat = parking.getLat();
+		    		aLng = parking.getLng();
+	    	
 		    		//change the color depending on the status
 		    		if (parking.getFree())
 				    	markercolor = markercolor_free;
@@ -648,12 +654,12 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 		        	
 		        	//adding event to HashMap
 		        	eventMarkerMap.put(marker, parking);
-	    		}
-	        }
+	    	}
+	        
 	    	
 	    	//Add the list
 	    	parkings_data = new ArrayList<ParkingMarker>();
-	    	parkings_data = parkings;
+	    	parkings_data = parkings_comb;
 	        adapter = new ParkingAdapter(MainActivity.this,parkings_data);
 	   
 	        lstOptions = (ListView)findViewById(R.id.LstParkings);
