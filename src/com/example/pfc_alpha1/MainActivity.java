@@ -2,8 +2,11 @@ package com.example.pfc_alpha1;
 
 
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import static com.example.pfc_alpha1.CommonUtilities.DISPLAY_MESSAGE_ACTION;
+import static com.example.pfc_alpha1.CommonUtilities.EXTRA_MESSAGE;
+import static com.example.pfc_alpha1.CommonUtilities.SENDER_ID;
+import static com.example.pfc_alpha1.CommonUtilities.SERVER_URL;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,7 +16,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -47,15 +49,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gcm.GCMRegistrar;
-
-
-import static com.example.pfc_alpha1.CommonUtilities.DISPLAY_MESSAGE_ACTION;
-import static com.example.pfc_alpha1.CommonUtilities.EXTRA_MESSAGE;
-import static com.example.pfc_alpha1.CommonUtilities.SENDER_ID;
-import static com.example.pfc_alpha1.CommonUtilities.SERVER_URL;
-import static  com.example.pfc_alpha1.CommonUtilities.EXTRA_MESSAGE;
-
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -96,9 +89,7 @@ List<ParkingMarker> parkings_data ;
 ParkingAdapter adapter;
 private ListView lstOptions;
 private List<ParkingMarker> parkings;
-private List<ParkingMarker> parkings_comb;
-private List<ParkingMarker> free_parkings;
-private List<ParkingMarker> full_parkings;
+
 
 
 // GCM
@@ -202,8 +193,6 @@ protected void onCreate(Bundle savedInstanceState) {
     
     //We create a list of parkings
     parkings = new ArrayList<ParkingMarker>();
-    free_parkings = new ArrayList<ParkingMarker>();
-    full_parkings = new ArrayList<ParkingMarker>();
     
     
     //We call to an auxiliar Async method to retrieve all the information followin the Google criteria
@@ -287,37 +276,7 @@ class ParkingAdapter extends ArrayAdapter<ParkingMarker> {
 		return(item);
 	}
 	
-	private float retrieveColor (int index ){
-    	
-    	float marker_color;
-    	
-    	switch(index){
-    	case 0:
-    		marker_color = BitmapDescriptorFactory.HUE_AZURE;
-    	case 1:
-    		marker_color = BitmapDescriptorFactory.HUE_BLUE;
-    	case 2:
-    		marker_color = BitmapDescriptorFactory.HUE_CYAN;
-    	case 3:
-    		marker_color = BitmapDescriptorFactory.HUE_GREEN;
-    	case 4:
-    		marker_color = BitmapDescriptorFactory.HUE_MAGENTA;
-    	case 5:
-    		marker_color = BitmapDescriptorFactory.HUE_ORANGE;
-    	case 6:
-    		marker_color = BitmapDescriptorFactory.HUE_RED;
-    	case 7:
-    		marker_color = BitmapDescriptorFactory.HUE_ROSE;
-    	case 8:
-    		marker_color = BitmapDescriptorFactory.HUE_VIOLET;
-    	case 9:
-    		marker_color = BitmapDescriptorFactory.HUE_YELLOW;
-    	default:
-    		marker_color = BitmapDescriptorFactory.HUE_GREEN;
-
-    	}
-    	return marker_color;
-    }
+	
 }
 
 /*
@@ -563,11 +522,6 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	     	 ParkingParser parkingparser = new ParkingParser(params[0]);
 	    	 parkings = parkingparser.parse();	 
 	    	 
-	    	 //Initializing for refresh
-	    	 free_parkings = new ArrayList<ParkingMarker>();
-	    	 full_parkings = new ArrayList<ParkingMarker>();
-	    	 
-	    	 
 	    	// Retrieving Filtering options
 	    	 SharedPreferences sh = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
 		    	FILTERING_RADIUS = sh.getBoolean("pref_radiusenabled", false);
@@ -590,33 +544,34 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 		    		// Filtering
 		    		 if(dista>RADIUS_DIST && FILTERING_RADIUS){
 		    		 i.remove();
-		    		 }else{	
-			    		//change the color depending on the status
-			    		if (parking.getFree())
-					    	free_parkings.add(parking);
-				    	else{
-				    		full_parkings.add(parking);
-			    		}
-			    		
-		    		}
+		    		 }
 		      }
 		    	
 	    	 
 	    	 // Sort by distance
-	    	Comparator<ParkingMarker> comparatorDist =  new Comparator<ParkingMarker>(){	    		 	
+	    	Comparator<ParkingMarker> comparatorDistandType =  new Comparator<ParkingMarker>(){	    		 	
 	    	    @Override    
 	    		public int compare(ParkingMarker o1, ParkingMarker o2) {
-	    	    	return Double.compare(o1.getDist(),o2.getDist());
+	    	    	
+	    	    	 String p1, p2;
+                     
+                     int result;
+                     
+                     if(o1.getFree()) p1="a";
+                         else p1 = "b";
+                     if(o2.getFree()) p2="a";
+                         else p2 = "b";
+                         
+                     result =p1.compareTo(p2);
+                     if (result == 0) {
+                         result = Double.compare(o1.getDist(),o2.getDist());
+                      }
+	    	    	
+	    	    	return result; 
 	    	  }};
 	    	 
-	    	 Collections.sort(free_parkings,comparatorDist);
-	    	 Collections.sort(full_parkings,comparatorDist);
-
-	    	 parkings_comb = new ArrayList<ParkingMarker>();
-	    	 parkings_comb.addAll(free_parkings);
-	    	 parkings_comb.addAll(full_parkings);
-
-
+	    	 Collections.sort(parkings,comparatorDistandType);
+	
 	        return true;
 	    }
 	
@@ -635,7 +590,7 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    	markercolor_occupied = retrieveColor(color_occupied_int);
 	    	
 	    	
-	    	for (ParkingMarker parking : parkings_comb){
+	    	for (ParkingMarker parking : parkings){
 	    		
 		    		aLat = parking.getLat();
 		    		aLng = parking.getLng();
@@ -659,7 +614,7 @@ private class RetrieveFeed extends AsyncTask<String,Integer,Boolean> {
 	    	
 	    	//Add the list
 	    	parkings_data = new ArrayList<ParkingMarker>();
-	    	parkings_data = parkings_comb;
+	    	parkings_data = parkings;
 	        adapter = new ParkingAdapter(MainActivity.this,parkings_data);
 	   
 	        lstOptions = (ListView)findViewById(R.id.LstParkings);
